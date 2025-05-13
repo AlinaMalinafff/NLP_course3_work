@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<div class="container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>История загрузок</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e0e0e0;
+        }
+        .btn-custom {
+            background-color: #262245;
+            color: white;
+            width: 200px;
+        }
+        .btn-custom:hover {
+            background-color: #3a3060;
+        }
+        .content-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .table th {
+            background-color: #262245;
+            color: white;
+        }
+        .btn-sm-custom {
+            background-color: #262245;
+            color: white;
+            margin: 2px;
+        }
+        .btn-sm-custom:hover {
+            background-color: #3a3060;
+            color: white;
+        }
+        h2 {
+            color: #262245;
+            margin-bottom: 20px;
+        }
+        .back-button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="content-container">
+            <h2>История загрузок</h2>
+
+            {% if files %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Имя файла</th>
+                            <th>Дата загрузки</th>
+                            <th>Дата отчета</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
+                        <tr>
+                            <td>{{ file.original_filename }}</td>
+                            <td>{{ file.uploaded_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                            <td>
+                                {% if file.report %}
+                                    {{ file.report.generated_at.strftime('%d.%m.%Y %H:%M') }}
+                                {% else %}
+                                    Нет отчета
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex">
+                                    <a href="{{ url_for('download_file', file_id=file.id) }}" class="btn btn-sm btn-sm-custom">Файл</a>
+                                    {% if file.report %}
+                                    <a href="{{ url_for('download_report', file_id=file.id) }}" class="btn btn-sm btn-sm-custom">Отчет</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info text-center">Вы еще не загружали файлы</div>
+            {% endif %}
+
+            <!-- Добавленная кнопка "Назад" -->
+            <div class="text-center back-button">
+                <a href="{{ url_for('home_user') }}" class="btn btn-custom">Вернуться на главную страницу</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
